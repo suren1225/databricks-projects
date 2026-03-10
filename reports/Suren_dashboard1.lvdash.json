@@ -1,0 +1,357 @@
+{
+  "datasets": [
+    {
+      "name": "4b6d864e",
+      "displayName": "customers",
+      "queryLines": [
+        "SELECT * FROM databricks_simulated_retail_customer_data.v01.customers"
+      ]
+    },
+    {
+      "name": "6024888a",
+      "displayName": "sales_orders",
+      "queryLines": [
+        "SELECT * FROM databricks_simulated_retail_customer_data.v01.sales_orders"
+      ]
+    },
+    {
+      "name": "d558a127",
+      "displayName": "Sales Goals",
+      "queryLines": [
+        "SELECT sum(total_price) AS Total_Sales, 3000000 AS Sales_Goal FROM databricks_simulated_retail_customer_data.v01.sales;"
+      ]
+    },
+    {
+      "name": "bb40d7a6",
+      "displayName": "Sales Data Overview for Selected Months",
+      "queryLines": [
+        "SELECT customer_name, \r\n",
+        "       total_price AS Total_Sales, \r\n",
+        "       date_format(order_date, \"MM\") AS Month, \r\n",
+        "       product_category \r\n",
+        "FROM databricks_simulated_retail_customer_data.v01.sales \r\n",
+        "WHERE order_date >= to_date('2019-08-01')\r\n",
+        "AND order_date <=  to_date('2019-10-31');"
+      ]
+    },
+    {
+      "name": "4ff82f2f",
+      "displayName": "sales",
+      "queryLines": [
+        "SELECT * FROM databricks_simulated_retail_customer_data.v01.sales"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "49f35bc2",
+      "displayName": "Summary",
+      "layout": [
+        {
+          "widget": {
+            "name": "sales-goal",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "d558a127",
+                  "fields": [
+                    {
+                      "name": "sum(Sales_Goal)",
+                      "expression": "SUM(`Sales_Goal`)"
+                    },
+                    {
+                      "name": "sum(Total_Sales)",
+                      "expression": "SUM(`Total_Sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "Sales Goal"
+              },
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "sum(Total_Sales)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "all"
+                    }
+                  },
+                  "style": {
+                    "rules": [
+                      {
+                        "condition": {
+                          "operator": "<="
+                        },
+                        "color": {
+                          "themeColorType": "visualizationColors",
+                          "position": 4
+                        }
+                      }
+                    ]
+                  }
+                },
+                "target": {
+                  "fieldName": "sum(Sales_Goal)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "none",
+                    "decimalPlaces": {
+                      "type": "all"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "sales-over-3-months",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bb40d7a6",
+                  "fields": [
+                    {
+                      "name": "Month",
+                      "expression": "`Month`"
+                    },
+                    {
+                      "name": "sum(Total_Sales)",
+                      "expression": "SUM(`Total_Sales`)"
+                    },
+                    {
+                      "name": "count(*)",
+                      "expression": "COUNT(`*`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "frame": {
+                "showTitle": true,
+                "title": "Sales Over 3 Months"
+              },
+              "widgetType": "combo",
+              "encodings": {
+                "x": {
+                  "fieldName": "Month",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "sum(Total_Sales)"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    },
+                    "format": {
+                      "type": "number-currency",
+                      "currencyCode": "USD",
+                      "abbreviation": "compact",
+                      "decimalPlaces": {
+                        "type": "max",
+                        "places": 2
+                      }
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "count(*)",
+                        "displayName": "Number Of Sales"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "9be242a3",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "bb40d7a6",
+                  "fields": [
+                    {
+                      "name": "product_category",
+                      "expression": "`product_category`"
+                    },
+                    {
+                      "name": "avg(Total_Sales)",
+                      "expression": "AVG(`Total_Sales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "frame": {
+                "title": "Average Sales by Product Category",
+                "showTitle": true
+              },
+              "mark": {
+                "layout": "group"
+              },
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "product_category",
+                  "displayName": "Product Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "avg(Total_Sales)",
+                  "format": {
+                    "type": "number-currency",
+                    "currencyCode": "USD",
+                    "abbreviation": "none"
+                  },
+                  "displayName": "Average Sales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "product_category",
+                  "legend": {
+                    "position": "right"
+                  },
+                  "displayName": "Product Category",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": true
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "9bcd3c8e",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "4ff82f2f",
+                  "fields": [
+                    {
+                      "name": "daily(order_date)",
+                      "expression": "DATE_TRUNC(\"DAY\", `order_date`)"
+                    },
+                    {
+                      "name": "sum(total_price)",
+                      "expression": "SUM(`total_price`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "daily(order_date)",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "sum(total_price)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "6ba9daeb",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Retail Organization"
+              ]
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 6,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "widgetHeaderAlignment": "ALIGNMENT_UNSPECIFIED"
+    },
+    "applyModeEnabled": false
+  }
+}
